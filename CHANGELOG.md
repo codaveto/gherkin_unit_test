@@ -1,3 +1,11 @@
+## 0.0.1+4
+
+* **🐛️ Bugfix:** Fixed logging where logging would only appear if examples were not empty.
+
+## 0.0.1+2
+
+* Update test project.
+
 ## 0.0.1+2
 
 * Update readme

@@ -1,5 +1,3 @@
-import 'package:example/gherkin_unit_test_view_model.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:gherkin_unit_test/unit_test.dart';
 
 import 'features/model_counter/scenarios/decrement_model_counter_scenario.dart';

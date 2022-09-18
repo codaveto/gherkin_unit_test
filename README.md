@@ -1,5 +1,3 @@
-# Gherkin Unit Test
-
 # 🧪 Gherkin Unit Test
 
 ---

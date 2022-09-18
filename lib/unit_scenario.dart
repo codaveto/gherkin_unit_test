@@ -82,18 +82,18 @@ class UnitScenario<SUT> {
               debugPrintSynchronously('---');
               try {
                 _systemUnderTest = await _systemUnderTestCallback();
+                if (testDescription != null) {
+                  debugPrintSynchronously(
+                      '${UnitLog.tag} 📝 Test: $testDescription');
+                }
+                if (featureDescription != null) {
+                  debugPrintSynchronously(
+                      '${UnitLog.tag} 🦾 Feature ${nrFeature + 1}: $featureDescription');
+                }
+                debugPrintSynchronously(
+                    '${UnitLog.tag} 🎩 Scenario ${nrScenario + 1}: $_description');
                 if (_examples.isNotEmpty) {
                   final example = _examples[index];
-                  if (testDescription != null) {
-                    debugPrintSynchronously(
-                        '${UnitLog.tag} 📝 Test: $testDescription');
-                  }
-                  if (featureDescription != null) {
-                    debugPrintSynchronously(
-                        '${UnitLog.tag} 🦾 Feature ${nrFeature + 1}: $featureDescription');
-                  }
-                  debugPrintSynchronously(
-                      '${UnitLog.tag} 🎩 Scenario ${nrScenario + 1}: $_description');
                   debugPrintSynchronously(
                       '${UnitLog.tag} 🏷 Example ${index + 1}: $example');
                 }
