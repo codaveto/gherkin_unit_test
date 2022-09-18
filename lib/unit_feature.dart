@@ -39,7 +39,7 @@ class UnitFeature {
   /// Runs this [UnitFeature]'s [UnitScenario.test] methods.
   void test({
     String? testDescription,
-    required int nrFeature,
+    int? nrFeature,
   }) {
     flutter_test.group(
       _description,

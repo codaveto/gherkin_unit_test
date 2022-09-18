@@ -66,8 +66,8 @@ class UnitScenario<SUT> {
     IntegrationTestWidgetsFlutterBinding? binding,
     String? testDescription,
     String? featureDescription,
-    required int nrScenario,
-    required int nrFeature,
+    int? nrScenario,
+    int? nrFeature,
   }) {
     flutter_test.group(
       _description,
@@ -88,10 +88,10 @@ class UnitScenario<SUT> {
                 }
                 if (featureDescription != null) {
                   debugPrintSynchronously(
-                      '${UnitLog.tag} 🦾 Feature ${nrFeature + 1}: $featureDescription');
+                      '${UnitLog.tag} 🦾 Feature${nrFeature != null ? ' ${nrFeature + 1}' : ''}: $featureDescription');
                 }
                 debugPrintSynchronously(
-                    '${UnitLog.tag} 🎩 Scenario ${nrScenario + 1}: $_description');
+                    '${UnitLog.tag} 🎩 Scenario${nrScenario != null ? ' ${nrScenario + 1}' : ''}: $_description');
                 if (_examples.isNotEmpty) {
                   final example = _examples[index];
                   debugPrintSynchronously(

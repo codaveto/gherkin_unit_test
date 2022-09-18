@@ -1,3 +1,7 @@
+## 0.0.1+5
+
+* Update required descriptions to nullable for more flexibility.
+
 ## 0.0.1+4
 
 * **🐛️ Bugfix:** Fixed logging where logging would only appear if examples were not empty.
