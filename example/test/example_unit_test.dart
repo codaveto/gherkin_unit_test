@@ -19,6 +19,11 @@ void main() {
           IncrementModelCounterScenario(),
           DecrementModelCounterScenario(),
           ResetModelCounterScenario(),
+        ],
+      ),
+      UnitFeature(
+        description: 'ValueNotifier counter',
+        scenarios: [
           IncrementValueNotifierCounterScenario(),
           DecrementValueNotifierCounterScenario(),
           ResetValueNotifierCounterScenario(),
