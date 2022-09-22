@@ -1,3 +1,7 @@
+## 0.0.1+6
+
+* Updated info icon.
+
 ## 0.0.1+5
 
 * Update required descriptions to nullable for more flexibility.

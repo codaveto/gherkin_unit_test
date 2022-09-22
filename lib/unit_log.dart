@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 class UnitLog {
   static const String tag = '[UNIT-TEST]';
 
-  void info(String message) => debugPrintSynchronously('$tag 💡 $message');
+  void info(String message) => debugPrintSynchronously('$tag 🗣 $message');
   void value(Object? value, String message) =>
       debugPrintSynchronously('$tag 💾 $message: $value');
   void warning([String message = 'Warning!']) =>
