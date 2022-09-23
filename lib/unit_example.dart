@@ -3,7 +3,7 @@ part of 'unit_test.dart';
 /// Used to define 'Scenario Outline' examples.
 class UnitExample {
   const UnitExample({
-    required List<Object?>? values,
+    List<Object?>? values,
     String? description,
     this.isLastExample = false,
   })  : _values = values,

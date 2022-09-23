@@ -1,3 +1,7 @@
+## 0.0.1+7
+
+* Remove `required` from the `UnitExample.values` field.
+
 ## 0.0.1+6
 
 * Updated info icon.
