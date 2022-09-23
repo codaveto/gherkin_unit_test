@@ -1,12 +1,12 @@
 part of 'unit_test.dart';
 
 /// Used to hold and test a list of [UnitStep].
-class UnitScenario<SUT> {
+class UnitScenario<SUT, Example extends UnitExample?> {
   UnitScenario({
     required String description,
     required FutureOr<SUT> Function() systemUnderTest,
-    required List<UnitStep<SUT, UnitExample>> steps,
-    List<UnitExample> examples = const [],
+    required List<UnitStep<SUT, Example>> steps,
+    List<Example> examples = const [],
     TestGroupFunction? setUpEach,
     TestGroupFunction? tearDownEach,
     TestGroupFunction? setUpOnce,
@@ -36,10 +36,10 @@ class UnitScenario<SUT> {
   ///
   /// For more information about how to write a [UnitStep] see the [IncrementCounterScenario]
   /// example or check out the [UnitStep] documentation.
-  final List<UnitStep<SUT, UnitExample>> _steps;
+  final List<UnitStep<SUT, Example>> _steps;
 
   /// List of scenario outline examples of type [Example] that extend [UnitExample].
-  final List<UnitExample> _examples;
+  final List<Example> _examples;
 
   /// Code that will run at the START of this [UnitScenario]
   /// or at the START of EACH [UnitScenario._examples].
@@ -104,9 +104,7 @@ class UnitScenario<SUT> {
                     result = await step.test(
                       systemUnderTest: _systemUnderTest!,
                       log: _log,
-                      example: index != (_examples.length - 1)
-                          ? _examples[index]
-                          : _examples[index].copyWith(isLastExample: true),
+                      example: _examples[index],
                       result: result,
                     );
                     if (result != null) {

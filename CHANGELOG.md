@@ -1,3 +1,7 @@
+## 0.0.2
+
+* **⚠️ Breaking:** Added generic argument to scenario for easier example usage.
+
 ## 0.0.1+7
 
 * Remove `required` from the `UnitExample.values` field.

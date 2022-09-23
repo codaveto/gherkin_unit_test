@@ -7,7 +7,7 @@ import 'package:gherkin_unit_test/unit_test.dart';
 import '../gherkin_unit_test_view_model_mock.dart';
 
 class DecrementModelCounterScenario
-    extends UnitScenario<GherkinUnitTestViewModel> {
+    extends UnitScenario<GherkinUnitTestViewModel, UnitExample> {
   static const _originalCounterValue = 3;
 
   DecrementModelCounterScenario()

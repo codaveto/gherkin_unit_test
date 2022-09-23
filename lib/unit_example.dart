@@ -18,16 +18,6 @@ class UnitExample {
   /// Indicates whether this is the last example of a scenario.
   final bool isLastExample;
 
-  UnitExample copyWith({
-    required bool isLastExample,
-  }) {
-    return UnitExample(
-      values: _values,
-      description: _description,
-      isLastExample: isLastExample,
-    );
-  }
-
   @override
   String toString() => _description ?? 'UnitExample{values: $_values}';
 }
