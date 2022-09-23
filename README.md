@@ -1,9 +1,11 @@
+# Gherkin Unit Test
+
 # 🧪 Gherkin Unit Test
 
 ---
 
 <aside>
-💡 The example project has a test folder where the example project is being fully tested with this framework. Check that out if you’re not that into reading good documentation 😏.
+💡 The example project has a test folder where the example project is being fully tested with this framework.
 
 </aside>
 
@@ -182,7 +184,7 @@ class DummyUnitTest extends UnitTest {
               scenarios: [
                 UnitScenario(
                   description: 'Saving a good dummy should succeed',
-                  systemUnderTest: DummyService(),
+                  systemUnderTest: () => DummyService(),
                   steps: [
                     Given(
                       'The dummy service is initialised',
@@ -329,6 +331,30 @@ Given(
 💡 *Be sure to make your declaration type safe, because the `firstValue()` helper method will `cast` the value to whatever type your specify, use with caution!*
 
 </aside>
+
+### 🧸 Custom Examples
+
+---
+
+It’s also possible to create your own `UnitExample` like this:
+
+```dart
+class CustomExample extends UnitExample {
+  CustomExample({
+    required this.platform,
+    required this.connection,
+  });
+
+  final Platform platform;
+  final Connection connection;
+}
+```
+
+Your `UnitStep` will automatically recognise the type of your example if you specify it as a generic argument for your `UnitScenario` like this:
+
+```dart
+class ExampleScenario extends UnitScenario<CustomExample> {}
+```
 
 ### 🏗 setUpOnce, setUpEach, tearDownOnce, tearDownEach
 
