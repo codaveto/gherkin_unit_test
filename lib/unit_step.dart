@@ -113,3 +113,11 @@ class Should<SUT, Example extends UnitExample?> extends UnitStep<SUT, Example> {
           step: step,
         );
 }
+
+/// Helpful but dangerous casting method to allow for easier usage of a [UnitStep] result.
+///
+/// This will cast the result to any type, use with caution!
+extension StepResultExtension on Object? {
+  E asType<E>() => this as E;
+  E? asNullableType<E>() => this as E?;
+}

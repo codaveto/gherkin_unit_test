@@ -1,3 +1,7 @@
+## 0.0.2+1
+
+* Added `asType` and `asNullableType` extension methods for easier usage of an `UnitStep`'s result.
+
 ## 0.0.2
 
 * **⚠️ Breaking:** Added generic argument to scenario for easier example usage.
