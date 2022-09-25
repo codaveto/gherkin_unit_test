@@ -1,3 +1,8 @@
+## 0.0.3
+
+* **⚠️ Breaking:** Replaces the `result` parameter (now `box`) of the `UnitStepCallback` with an instance of `UnitBox`. This will allow you to save multiple persistent values throughout a series of steps inside the `box` instead of passing around a maximum of one single value as a `result` through multiple steps.
+* **⚠️ Breaking:** Removed the recently introduces extension methods for cast a result since `result` has now been replaces with the new `UnitBox` which has this functionality built in.
+
 ## 0.0.2+1
 
 * Added `asType` and `asNullableType` extension methods for easier usage of an `UnitStep`'s result.

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart' as flutter_test;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../../test_group_function.dart';
@@ -12,6 +13,7 @@ part 'unit_example.dart';
 part 'unit_feature.dart';
 part 'unit_scenario.dart';
 part 'unit_step.dart';
+part 'unit_box.dart';
 
 /// Used to hold and test a list of [UnitFeature].
 class UnitTest {

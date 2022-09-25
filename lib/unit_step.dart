@@ -1,12 +1,12 @@
 part of 'unit_test.dart';
 
 /// Callback used to provide the necessary tools to execute a [UnitStep].
-typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<dynamic>
+typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void>
     Function(
   SUT systemUnderTest,
-  UnitLog log, [
+  UnitLog log,
+  UnitBox box, [
   Example? example,
-  Object? result,
 ]);
 
 /// Used to represents a step inside a [UnitScenario].
@@ -24,18 +24,18 @@ abstract class UnitStep<SUT, Example extends UnitExample?> {
   final UnitStepCallback<SUT, Example> _step;
 
   /// Runs all code defined in a specific [UnitStep].
-  FutureOr<Object?> test({
+  FutureOr<void> test({
     required SUT systemUnderTest,
     required UnitLog log,
+    required UnitBox box,
     Example? example,
-    Object? result,
   }) async {
     debugPrint(_description);
     return await _step(
       systemUnderTest,
       log,
+      box,
       example,
-      result,
     );
   }
 }

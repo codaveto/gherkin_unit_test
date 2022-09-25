@@ -17,7 +17,7 @@ class ResetValueNotifierCounterScenario
           steps: [
             Given(
               'The ValueNotifier has been incremented',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 final int nrOfIncrements = example.firstValue();
                 for (int increment = 0;
@@ -31,7 +31,7 @@ class ResetValueNotifierCounterScenario
             ),
             WhenThen(
               'I call the reset method then the ValueNotifier should be 0',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.valueListenableCounter.value, 0);
                 log.success();

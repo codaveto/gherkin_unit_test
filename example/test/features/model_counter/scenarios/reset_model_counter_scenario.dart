@@ -17,7 +17,7 @@ class ResetModelCounterScenario
           steps: [
             Given(
               'The modelCounter has been incremented',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 final int nrOfIncrements = example.firstValue();
                 for (int increment = 0;
@@ -30,7 +30,7 @@ class ResetModelCounterScenario
             ),
             WhenThen(
               'I call the reset method then the modelCounter should be 0',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.modelCounter, 0);
               },
