@@ -98,30 +98,28 @@ class UnitScenario<SUT, Example extends UnitExample?> {
                       '${UnitLog.tag} 🏷 Example ${index + 1}: $example');
                 }
                 debugPrintSynchronously('${UnitLog.tag} 🎬 --- Test started!');
-                Object? result;
-                for (final step in _steps) {
-                  if (_examples.isNotEmpty) {
-                    result = await step.test(
-                      systemUnderTest: _systemUnderTest!,
-                      log: _log,
-                      example: _examples[index],
-                      result: result,
-                    );
-                    if (result != null) {
-                      debugPrintSynchronously(
-                          '${UnitLog.tag} 📜 Passing result to next step: $result');
-                    }
-                  } else {
-                    result = await step.test(
-                      log: _log,
-                      systemUnderTest: _systemUnderTest!,
-                      result: result,
-                    );
-                    if (result != null) {
-                      debugPrintSynchronously(
-                          '${UnitLog.tag} 📜 Passing result to next step: $result');
+                final box = UnitBox();
+                try {
+                  for (final step in _steps) {
+                    if (_examples.isNotEmpty) {
+                      await step.test(
+                        systemUnderTest: _systemUnderTest!,
+                        log: _log,
+                        example: _examples[index],
+                        box: box,
+                      );
+                    } else {
+                      await step.test(
+                        log: _log,
+                        systemUnderTest: _systemUnderTest!,
+                        box: box,
+                      );
                     }
                   }
+                } catch (error) {
+                  rethrow;
+                } finally {
+                  box._clear();
                 }
               } catch (error) {
                 debugPrintSynchronously('${UnitLog.tag} ❌ Test failed!\n---');

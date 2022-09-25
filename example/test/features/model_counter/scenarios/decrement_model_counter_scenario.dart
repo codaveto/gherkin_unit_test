@@ -22,7 +22,7 @@ class DecrementModelCounterScenario
           steps: [
             Given(
               'The counter is at $_originalCounterValue',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 for (int increment = 0;
                     increment < _originalCounterValue;
@@ -34,7 +34,7 @@ class DecrementModelCounterScenario
             ),
             When(
               'I decrement the counter',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 final int nrOfDecrements = example.firstValue();
                 log.value(nrOfDecrements, 'Number of decrements');
                 for (int decrement = 0;
@@ -42,17 +42,18 @@ class DecrementModelCounterScenario
                     decrement++) {
                   systemUnderTest.decrementModelCounter();
                 }
-                return nrOfDecrements;
+                box.write('nrOfDecrements', nrOfDecrements);
               },
             ),
             Then(
               'We expect the modelCounter to have a '
               'decremented value of ($_originalCounterValue minus decrements) '
               'and (at least 0)',
-              (systemUnderTest, log, [example, nrOfDecrements]) {
+              (systemUnderTest, log, box, [example]) {
+                final int nrOfDecrements = box.read('nrOfDecrements');
                 expect(
                   systemUnderTest.modelCounter,
-                  max(_originalCounterValue - (nrOfDecrements as int), 0),
+                  max(_originalCounterValue - nrOfDecrements, 0),
                 );
                 log.success();
               },

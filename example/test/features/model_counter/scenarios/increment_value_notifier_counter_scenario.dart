@@ -18,14 +18,14 @@ class IncrementValueNotifierCounterScenario
           steps: [
             Given(
               'The counter is at 0',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.valueListenableCounter.value, 0);
               },
             ),
             When(
               'I increment the counter',
-              (systemUnderTest, log, [example, result]) {
+              (systemUnderTest, log, box, [example]) {
                 final int nrOfIncrements = example.firstValue();
                 log.value(nrOfIncrements, 'Number of increments');
                 for (int increment = 0;
@@ -33,12 +33,13 @@ class IncrementValueNotifierCounterScenario
                     increment++) {
                   systemUnderTest.incrementValueNotifierCounter();
                 }
-                return nrOfIncrements;
+                box.write('nrOfIncrements', nrOfIncrements);
               },
             ),
             Then(
               'We expect the ValueNotifier counter to have the value of the increments',
-              (systemUnderTest, log, [example, nrOfIncrements]) {
+              (systemUnderTest, log, box, [example]) {
+                final int nrOfIncrements = box.read('nrOfIncrements');
                 expect(systemUnderTest.valueListenableCounter.value,
                     nrOfIncrements);
                 log.success();
