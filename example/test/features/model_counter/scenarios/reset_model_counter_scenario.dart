@@ -9,7 +9,7 @@ class ResetModelCounterScenario
   ResetModelCounterScenario()
       : super(
           description: 'Reset the modelCounter',
-          systemUnderTest: () => GherkinUnitTestViewModelMock(),
+          systemUnderTest: (_) => GherkinUnitTestViewModelMock(),
           examples: [
             const UnitExample(values: [1]),
             const UnitExample(values: [3]),
@@ -17,7 +17,7 @@ class ResetModelCounterScenario
           steps: [
             Given(
               'The modelCounter has been incremented',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 final int nrOfIncrements = example.firstValue();
                 for (int increment = 0;
@@ -30,7 +30,7 @@ class ResetModelCounterScenario
             ),
             WhenThen(
               'I call the reset method then the modelCounter should be 0',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.modelCounter, 0);
               },

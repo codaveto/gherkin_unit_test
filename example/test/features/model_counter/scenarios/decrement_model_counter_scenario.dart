@@ -13,7 +13,7 @@ class DecrementModelCounterScenario
   DecrementModelCounterScenario()
       : super(
           description: 'Decrement the modelCounter',
-          systemUnderTest: () => GherkinUnitTestViewModelMock(),
+          systemUnderTest: (_) => GherkinUnitTestViewModelMock(),
           examples: [
             const UnitExample(values: [1]),
             const UnitExample(values: [5]),
@@ -22,7 +22,7 @@ class DecrementModelCounterScenario
           steps: [
             Given(
               'The counter is at $_originalCounterValue',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 for (int increment = 0;
                     increment < _originalCounterValue;
@@ -34,7 +34,7 @@ class DecrementModelCounterScenario
             ),
             When(
               'I decrement the counter',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfDecrements = example.firstValue();
                 log.value(nrOfDecrements, 'Number of decrements');
                 for (int decrement = 0;
@@ -49,7 +49,7 @@ class DecrementModelCounterScenario
               'We expect the modelCounter to have a '
               'decremented value of ($_originalCounterValue minus decrements) '
               'and (at least 0)',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfDecrements = box.read('nrOfDecrements');
                 expect(
                   systemUnderTest.modelCounter,

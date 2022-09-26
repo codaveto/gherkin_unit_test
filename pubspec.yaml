@@ -1,6 +1,6 @@
 name: gherkin_unit_test
 description: A gherkin unit test framework based on flutter's official flutter_test package.
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/codaveto/gherkin_unit_test
 
 environment:

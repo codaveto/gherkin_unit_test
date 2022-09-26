@@ -5,7 +5,8 @@ typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void>
     Function(
   SUT systemUnderTest,
   UnitLog log,
-  UnitBox box, [
+  UnitBox box,
+  UnitMocks mocks, [
   Example? example,
 ]);
 
@@ -28,13 +29,15 @@ abstract class UnitStep<SUT, Example extends UnitExample?> {
     required SUT systemUnderTest,
     required UnitLog log,
     required UnitBox box,
+    required UnitMocks mocks,
     Example? example,
   }) async {
-    debugPrint(_description);
+    debugPrintSynchronously(_description);
     return await _step(
       systemUnderTest,
       log,
       box,
+      mocks,
       example,
     );
   }

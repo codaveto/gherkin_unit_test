@@ -9,7 +9,7 @@ class ResetValueNotifierCounterScenario
   ResetValueNotifierCounterScenario()
       : super(
           description: 'Reset the ValueNotifier',
-          systemUnderTest: () => GherkinUnitTestViewModelMock(),
+          systemUnderTest: (_) => GherkinUnitTestViewModelMock(),
           examples: [
             const UnitExample(values: [1]),
             const UnitExample(values: [3]),
@@ -17,7 +17,7 @@ class ResetValueNotifierCounterScenario
           steps: [
             Given(
               'The ValueNotifier has been incremented',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 final int nrOfIncrements = example.firstValue();
                 for (int increment = 0;
@@ -31,7 +31,7 @@ class ResetValueNotifierCounterScenario
             ),
             WhenThen(
               'I call the reset method then the ValueNotifier should be 0',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.valueListenableCounter.value, 0);
                 log.success();

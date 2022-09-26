@@ -9,7 +9,7 @@ class IncrementModelCounterScenario
   IncrementModelCounterScenario()
       : super(
           description: 'Increment the modelCounter',
-          systemUnderTest: () => GherkinUnitTestViewModelMock(),
+          systemUnderTest: (_) => GherkinUnitTestViewModelMock(),
           examples: [
             const UnitExample(values: [1]),
             const UnitExample(values: [5]),
@@ -18,14 +18,14 @@ class IncrementModelCounterScenario
           steps: [
             Given(
               'The counter is at 0',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.modelCounter, 0);
               },
             ),
             When(
               'I increment the counter',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfIncrements = example.firstValue();
                 log.value(nrOfIncrements, 'Number of increments');
                 for (int increment = 0;
@@ -38,7 +38,7 @@ class IncrementModelCounterScenario
             ),
             Then(
               'We expect the modelCounter to have the value of the increments',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfIncrements = box.read('nrOfIncrements');
                 expect(systemUnderTest.modelCounter, nrOfIncrements);
                 log.success();
