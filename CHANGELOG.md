@@ -1,3 +1,12 @@
+## 0.0.4
+
+* **✨ New:** Added the option to add a `systemUnderTest` from higher up the tree (e.g. `UnitFeature` and `UnitTest`).
+* **⚠️ Breaking:** Added the `UnitMocks` object that gets passed around from initialising your `systemUnderTest` until your last `UnitStep`.
+* **⚠️ Breaking:** The `systemUnderTest` will now persist through all `UnitStep`s and `UnitExample`s of a `UnitScenario`.
+* **⚠️ Breaking:** The `systemUnderTest` may now also be defined inside a `UnitFeature` or `UnitTest` and will cascade down to a `UnitScenario`. If a child has a new `systemUnderTest` defined it will use that instead.
+* **⚠️ Breaking:** The `systemUnderTest` method of our main classes (`UnitTest`, `UnitFeature` or `UnitScenario`) will always be called before any other method inside that class.
+* **⚠️ Breaking:** All set up methods (`setUpEach`, `setUpOnce`, `tearDownEach` and `tearDownOnce`) inside all parent classes (`UnitTest`, `UnitFeature` and `UnitScenario`) will now have access to the new `UnitMocks` object, as well as any `systemUnderTest` you might have initialised in one of those classes.
+
 ## 0.0.3
 
 * **⚠️ Breaking:** Replaces the `result` parameter (now `box`) of the `UnitStepCallback` with an instance of `UnitBox`. This will allow you to save multiple persistent values throughout a series of steps inside the `box` instead of passing around a maximum of one single value as a `result` through multiple steps.

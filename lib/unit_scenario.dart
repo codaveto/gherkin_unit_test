@@ -4,8 +4,8 @@ part of 'unit_test.dart';
 class UnitScenario<SUT, Example extends UnitExample?> {
   UnitScenario({
     required String description,
-    required FutureOr<SUT> Function() systemUnderTest,
     required List<UnitStep<SUT, Example>> steps,
+    SUT Function(UnitMocks mocks)? systemUnderTest,
     List<Example> examples = const [],
     TestGroupFunction? setUpEach,
     TestGroupFunction? tearDownEach,
@@ -21,16 +21,13 @@ class UnitScenario<SUT, Example extends UnitExample?> {
         _tearDownOnce = tearDownOnce;
 
   /// Used to facilitate extra logging capabilities inside [UnitStep].
-  final UnitLog _log = UnitLog();
+  final UnitLog _log = const UnitLog();
 
   /// High-level description of the [UnitScenario].
   final String _description;
 
   /// The callback to retrieve the system/unit that you are testing.
-  final FutureOr<SUT> Function() _systemUnderTestCallback;
-
-  /// The system/unit that you are testing.
-  SUT? _systemUnderTest;
+  final SUT Function(UnitMocks mocks)? _systemUnderTestCallback;
 
   /// List that specifies all [UnitScenario]s for a given [UnitFeature].
   ///
@@ -63,16 +60,22 @@ class UnitScenario<SUT, Example extends UnitExample?> {
   /// own [testWidgets] method. Override this method and call your [_steps] test() methods in a
   /// different manner if this unwanted behaviour.
   void test({
-    IntegrationTestWidgetsFlutterBinding? binding,
     String? testDescription,
     String? featureDescription,
     int? nrScenario,
     int? nrFeature,
+    UnitMocks? mocks,
+    SUT? systemUnderTest,
   }) {
+    assert((_systemUnderTestCallback != null) || (systemUnderTest != null),
+        'You must specify a systemUnderTest in a UnitScenario or higher up the tree.');
     flutter_test.group(
       _description,
       () {
-        _setUpAndTeardown();
+        final _mocks = mocks ?? UnitMocks();
+        SUT? _systemUnderTest =
+            _systemUnderTestCallback?.call(_mocks) ?? systemUnderTest;
+        _setUpAndTeardown(mocks: _mocks, systemUnderTest: _systemUnderTest);
         for (int index = 0; index < math.max(1, _examples.length); index++) {
           flutter_test.test(
             _examples.isNotEmpty
@@ -81,7 +84,6 @@ class UnitScenario<SUT, Example extends UnitExample?> {
             () async {
               debugPrintSynchronously('---');
               try {
-                _systemUnderTest = await _systemUnderTestCallback();
                 if (testDescription != null) {
                   debugPrintSynchronously(
                       '${UnitLog.tag} 📝 Test: $testDescription');
@@ -99,27 +101,23 @@ class UnitScenario<SUT, Example extends UnitExample?> {
                 }
                 debugPrintSynchronously('${UnitLog.tag} 🎬 --- Test started!');
                 final box = UnitBox();
-                try {
-                  for (final step in _steps) {
-                    if (_examples.isNotEmpty) {
-                      await step.test(
-                        systemUnderTest: _systemUnderTest!,
-                        log: _log,
-                        example: _examples[index],
-                        box: box,
-                      );
-                    } else {
-                      await step.test(
-                        log: _log,
-                        systemUnderTest: _systemUnderTest!,
-                        box: box,
-                      );
-                    }
+                for (final step in _steps) {
+                  if (_examples.isNotEmpty) {
+                    await step.test(
+                      systemUnderTest: _systemUnderTest!,
+                      log: _log,
+                      example: _examples[index],
+                      box: box,
+                      mocks: _mocks,
+                    );
+                  } else {
+                    await step.test(
+                      log: _log,
+                      systemUnderTest: _systemUnderTest!,
+                      box: box,
+                      mocks: _mocks,
+                    );
                   }
-                } catch (error) {
-                  rethrow;
-                } finally {
-                  box._clear();
                 }
               } catch (error) {
                 debugPrintSynchronously('${UnitLog.tag} ❌ Test failed!\n---');
@@ -133,10 +131,21 @@ class UnitScenario<SUT, Example extends UnitExample?> {
   }
 
   /// Runs any provided [_setUpEach], [_setUpOnce], [_tearDownEach] and [_tearDownOnce] methods.
-  void _setUpAndTeardown() {
-    if (_setUpOnce != null) flutter_test.setUpAll(_setUpOnce!);
-    if (_tearDownOnce != null) flutter_test.tearDownAll(_tearDownOnce!);
-    if (_setUpEach != null) flutter_test.setUp(_setUpEach!);
-    if (_tearDownEach != null) flutter_test.tearDown(_tearDownEach!);
+  void _setUpAndTeardown({
+    required SUT? systemUnderTest,
+    required UnitMocks mocks,
+  }) {
+    if (_setUpOnce != null) {
+      flutter_test.setUpAll(() => _setUpOnce!(mocks, systemUnderTest));
+    }
+    if (_tearDownOnce != null) {
+      flutter_test.tearDownAll(() => _tearDownOnce!(mocks, systemUnderTest));
+    }
+    if (_setUpEach != null) {
+      flutter_test.setUp(() => _setUpEach!(mocks, systemUnderTest));
+    }
+    if (_tearDownEach != null) {
+      flutter_test.tearDown(() => _tearDownEach!(mocks, systemUnderTest));
+    }
   }
 }

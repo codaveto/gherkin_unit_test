@@ -9,7 +9,7 @@ class IncrementValueNotifierCounterScenario
   IncrementValueNotifierCounterScenario()
       : super(
           description: 'Increment the ValueNotifier counter',
-          systemUnderTest: () => GherkinUnitTestViewModelMock(),
+          systemUnderTest: (_) => GherkinUnitTestViewModelMock(),
           examples: [
             const UnitExample(values: [1]),
             const UnitExample(values: [5]),
@@ -18,14 +18,14 @@ class IncrementValueNotifierCounterScenario
           steps: [
             Given(
               'The counter is at 0',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 systemUnderTest.reset();
                 expect(systemUnderTest.valueListenableCounter.value, 0);
               },
             ),
             When(
               'I increment the counter',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfIncrements = example.firstValue();
                 log.value(nrOfIncrements, 'Number of increments');
                 for (int increment = 0;
@@ -38,7 +38,7 @@ class IncrementValueNotifierCounterScenario
             ),
             Then(
               'We expect the ValueNotifier counter to have the value of the increments',
-              (systemUnderTest, log, box, [example]) {
+              (systemUnderTest, log, box, mocks, [example]) {
                 final int nrOfIncrements = box.read('nrOfIncrements');
                 expect(systemUnderTest.valueListenableCounter.value,
                     nrOfIncrements);

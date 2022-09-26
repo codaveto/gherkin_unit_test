@@ -3,11 +3,13 @@
 ---
 
 <aside>
-💡 The example project has a test folder where the example project is being fully tested with this framework.
+❗ The example project has a test folder where the example project is being fully tested with this framework.
 
 </aside>
 
-This package is based on the Behaviour Driven Development (BDD) language called Gherkin. This language enables us as developers to design and execute tests in an intuitive and readable way. For people who have a little less experience with development, these tests are also easy to understand because the syntax is very similar to English.
+This package is based on the `Behaviour Driven Development` (BDD) language called `Gherkin`. This language enables us as developers to design and execute tests in an intuitive and readable way. For people who have a little less experience with development, these tests are also easy to understand because the syntax is very similar to English.
+
+![gherkin.jpg](gherkin.jpg)
 
 Most tests look something like this:
 
@@ -20,7 +22,7 @@ Feature: This feature shows an example
       Then the example should explode
 ```
 
-In this same we have built our framework, we have the following classes at our disposal:
+In this same way we have built our framework, we have the following classes at our disposal:
 
 - `UnitTest`
 - `UnitFeature`
@@ -33,29 +35,7 @@ In this same we have built our framework, we have the following classes at our d
   - `And`
   - `But`
 
-From top to bottom, each class may contain a number of the class below it (one to many). A test may contain multiple features which in turn may contain multiple scenarios. Scenarios can then (optionally) run different examples in which they perform a series of steps.
-
-<aside>
-💡 *In this guide we will instantiate most classes on the fly and describe them with a `description` parameter. This feels more natural and intuitive when creating tests. However, you may also choose to inherit the classes and override values as you see fit. This may allow for more structure and will give you a little more flexibility as to adding your own classes / values inside the implementations, because working from the constructor will not allow any access to values inside the class. That being said most of the time you won’t need to add your own classes because this framework provides you with enough flexibility through `setUp` / `tearDown` methods and the saving of values throughout different steps (more on that later).*
-
-</aside>
-
-## 🥼 Basic testing knowledge
-
----
-
-- Before continuing this guide make sure you have basic testing knowledge regarding writing unit tests in Flutter. The following resource is a great place to start:
-
-  [An introduction to unit testing](https://docs.flutter.dev/cookbook/testing/unit/introduction)
-
-- Be sure to have a look at the `expect library` of the `flutter_test` package. You don’t have to know every method that’s available but it’s good to have seen most methods at least once so you know what’s possible. This library should be used to assert outcomes of your tests.
-
-  [expect library - Dart API](https://api.flutter.dev/flutter/package-test_api_expect/package-test_api_expect-library.html)
-
-- Last but not least, we use the `mockito` package to mock services when needed, check out their page and specifically how to stub and how the `@GenerateMocks([])` annotation works.
-
-  [mockito | Dart Package](https://pub.dev/packages/mockito)
-
+From top to bottom, each class may contain a number of the class below it (one to many). A `UnitTest` may contain multiple `UnitFeature` which in turn may contain multiple `UnitScenario` which in turn may contain multiple `UnitStep`.
 
 ## 🛠 Implementation
 
@@ -64,7 +44,6 @@ From top to bottom, each class may contain a number of the class below it (one t
 Start by creating a test class that inherits the `UnitTest` class. Then create a constructor that takes no arguments but does call the superclass with a `description` and (for now) an empty list of `features`.
 
 ```dart
-@GenerateMocks([])
 class DummyUnitTest extends UnitTest {
   DummyUnitTest()
       : super(
@@ -74,26 +53,41 @@ class DummyUnitTest extends UnitTest {
 }
 ```
 
-<aside>
-💡 *We will not get into specifics on how to use mocks and / or how to create them, just know that we use the `@GenerateMocks([])` annotation to easily create and stub mocks of desired classes. For more info on the annotation and mocks in general check out the link mentioned in **🥼 Basic testing knowledge** above.*
-
-</aside>
-
 ### 📲 Features
 
 ---
 
 In the `features` list we can now define our first `UnitFeature`. We give it a name and (for now) an empty list of `scenarios`.
 
+The `UnitFeature` is also the place where we (for this example) define the `systemUnderTest` that we would like to test.
+
+<aside>
+💡 You may also define a `systemUnderTest` higher up or lower down the tree in either a `UnitTest` or `UnitScenario,` doing so will ensure that the `systemUnderTest` will persist inside the respective class. Any `systemUnderTest` defined lower down the tree will get precedence over any `systemUnderSystem` defined higher up the tree.
+
+</aside>
+
+This paramater takes a callback where you may perform any logic to initialise the `systemUnderTest`. This callback is carried out after before any `setUp` methods you specify in that class.
+
+<aside>
+💡 The `systemUnderTest` callback also gives you access to a `UnitMock` object. You may optionally use this object to store mocks for your `systemUnderTest` so you may later retrieve them to reset or stub methods to your liking.
+
+</aside>
+
+In this example we’ll use a `DummyService()` as our `systemUnderTest`. The `DummyService` gets a `dummyMock` as its parameter which we will save to the `UnitMocks` object so we can later manipulate it as we see fit.
+
 ```dart
-@GenerateMocks([])
 class DummyUnitTest extends UnitTest {
   DummyUnitTest()
       : super(
           description: 'All unit tests regarding dummies',
           features: [
-            UnitFeature(
+            UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              systemUnderTest: (mocks) {
+                final dummyMock = DummyMock();
+                mocks.write(dummyMock);
+                return DummyService(dummyDependency: dummyMock);
+              },
               scenarios: [],
             ),
           ],
@@ -101,30 +95,39 @@ class DummyUnitTest extends UnitTest {
 }
 ```
 
+<aside>
+💡 Give your class the generic type of your `systemUnderTest` so it automatically comes as the right type in the `UnitScenario`’s `UnitStep`’s later down the tree.
+
+</aside>
+
 ### 🤝 Scenarios
 
 ---
 
-Now it's time to think about what kind of `scenarios` might occur in your test. Often this is already well thought out in advance when preparing a ticket. For this example we will use ’a successful save’ and ‘an unsuccessful save’ as possible `scenarios`. We use the `UnitScenario` class to create both `scenarios` and place them in the empty list. The scenario is also the place where we define the `systemUnderTest` that we would like to test. This paramater takes a callback where you may perform any logic to initialise the `systemUnderTest`. This callback is carried out after any `setUp` methods you specify (more on those methods later). This resembles the unit that we want to test and is a required parameter in each `UnitScenario`. In this example we’ll use a `DummyService()`. We also pass in a `description` and this time an empty list of `steps`.
+Now it's time to think about what kind of `scenarios` might occur in your test. For this example we will use ’a successful save’ and ‘an unsuccessful save’ as possible `scenarios`.
+
+We use the `UnitScenario` class to create both `scenarios` and place them in the empty list. We also pass in a `description` and this time an empty list of `steps`.
 
 ```dart
-@GenerateMocks([])
 class DummyUnitTest extends UnitTest {
-  DummyUnitTests()
+  DummyUnitTest()
       : super(
           description: 'All unit tests regarding dummies',
           features: [
-            UnitFeature(
+            UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              systemUnderTest: (mocks) {
+                final dummyMock = DummyMock();
+                mocks.write(dummyMock);
+                return DummyService(dummyDependency: dummyMock);
+              },
               scenarios: [
-                UnitScenario<DummyService>(
+                UnitScenario(
                   description: 'Saving a good dummy should succeed',
-                  systemUnderTest: DummyService(),
                   steps: [],
                 ),
-                UnitScenario<DummyService>(
+                UnitScenario(
                   description: 'Saving a bad dummy should fail',
-                  systemUnderTest: DummyService(),
                   steps: [],
                 ),
               ],
@@ -133,11 +136,6 @@ class DummyUnitTest extends UnitTest {
         );
 }
 ```
-
-<aside>
-💡 *Give your scenario the generic type of your systemUnderTest so it automatically comes as the right type in the next step.*
-
-</aside>
 
 ### 🐾 Steps
 
@@ -152,7 +150,8 @@ Each step requires a description and a callback. The callback for the `UnitTests
 typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void> Function(
   SUT systemUnderTest,
   UnitLog log,
-  UnitBox box, [
+  UnitBox box,
+  UnitMocks mocks, [
   Example? example,
 ]);
 ```
@@ -162,41 +161,109 @@ typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void> Fun
 - `Log log`
   - Class that allows for subtle logging of steps information in your tests.
 - `UnitBox box`
-  - A box that may be used to write and read values that need to persist throughout a series of steps inside a `UnitScenario`.
-- `UnitExample? example`
-  - Optional ‘Scenario Outline’ examples that we’ll get to later, in short these are different inputs for the same scenario so you can run / cover different variations of one scenario.
+  - This box is basically a map that may be used to write and read values that need to persist throughout a series of steps inside a `UnitScenario`. Any value that you `box.write(key, value)` will be retrievable in all `UnitStep`'s after that or until removed or until all steps have been executed. Reading a value with box.`read(key)` will automatically cast it to the `Type` that you specify. So reading an `int` like this → `final int value = box.read(myIntValue)` would automatically cast it to an `int` (🆒).
 
-Setting up the success scenario may look like this:
+    Using the box may look like this:
+
+      ```dart
+      [
+        Given(
+          'This is an example for the UnitBox',
+          (systemUnderTest, log, box, mocks, [example]) {
+            box.write('isExample', true);
+          },
+        ),
+        When(
+          'we write some values',
+          (systemUnderTest, log, box, mocks, [example]) {
+            box.write('exampleValue', 1);
+            box.write('mood', 'happy');
+          },
+        ),
+        Then(
+          'all the values should be accessible up until the last step.',
+          (systemUnderTest, log, box, mocks, [example]) {
+            final bool isExample = box.read('isExample');
+            final int exampleValue = box.read('exampleValue');
+            final bool mood = box.read('mood');
+            expect(isExample, true);
+            expect(exampleValue, 1);
+            expect(mood, 'happy');
+          },
+        ),
+      ]
+      ```
+
+- `UnitMocks mocks`
+  - Alos a box that exists and persists throughout your entire `UnitTest`, `UnitFeature` and/or `UnitScenario`. You may have optionally used this box to store mocks that your `systemUnderTest` needs so you may later retrieve them to stub methods to your liking.
+- `UnitExample? example`
+  - Optional ‘Scenario Outline’ examples that may have been specified inside a `UnitScenario` like this:
+
+      ```
+      UnitScenario(
+        description: 'Saving a good dummy should succeed',
+        examples: [
+          const UnitExample(values: [1]),
+          const UnitExample(values: [5]),
+          const UnitExample(values: [10]),
+        ],
+      )
+      ```
+
+    This `UnitScenario` will now run 3 times, once for each `UnitExample`. You may access the `example` in the following way:
+
+      ```dart
+      Given(
+        'I access the example value',
+        (systemUnderTest, log, box, mocks, [example]) {
+          final int exampleValue = example!.firstValue();
+        },
+      )
+      ```
+
+      <aside>
+      💡 *Be sure to make your declaration type safe so the `firstValue()` helper method can `cast` the value to whatever type your specify, use with caution!*
+
+      </aside>
+
+
+### 🐾 Steps Implementation
+
+Combining all that information will allow us to finalise and set up the success scenario like this:
 
 ```dart
-@GenerateMocks([])
 class DummyUnitTest extends UnitTest {
   DummyUnitTest()
       : super(
           description: 'All unit tests regarding dummies',
           features: [
-            UnitFeature(
+            UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              systemUnderTest: (mocks) {
+                final dummyMock = DummyMock();
+                mocks.write(dummyMock);
+                return DummyService(dummyDependency: dummyMock);
+              },
               scenarios: [
                 UnitScenario(
                   description: 'Saving a good dummy should succeed',
-                  systemUnderTest: () => DummyService(),
                   steps: [
                     Given(
                       'The dummy service is initialised',
-                      (systemUnderTest, log, box, [_]) {
+                      (systemUnderTest, log, box, mocks, [_]) {
+												mocks.read(DummyMock).stubWhatever();
                         // TODO(you): Initialise service
                       },
                     ),
                     When(
                       'We call the dummy service with dummy info',
-                      (systemUnderTest, log, box, [example]) {
+                      (systemUnderTest, log, box, mocks, [example]) {
                         // TODO(you): Call dummy service with dummy info
                       },
                     ),
                     Then(
                       'It should succeed',
-                      (systemUnderTest, log, box, [example]) {
+                      (systemUnderTest, log, box, mocks, [example]) {
                         // TODO(you): Verify success
                       },
                     ),
@@ -204,10 +271,7 @@ class DummyUnitTest extends UnitTest {
                 ),
                 UnitScenario(
                   description: 'Saving a bad dummy should fail',
-                  systemUnderTest: DummyService(),
-                  steps: [
-                    // TODO(you): Implement fail steps
-                  ],
+                  steps: [],
                 ),
               ],
             ),
@@ -216,14 +280,11 @@ class DummyUnitTest extends UnitTest {
 }
 ```
 
-While this may perfectly fit our testing needs there are a couple functionalities at our disposal that give our tests extra power:
-
-- `UnitExample`
-- `setUp` and `tearDown` methods
-
 ### **🏆 Bonus UnitSteps**
 
 ---
+
+Because not everybody wants to write tests the same way we also created these combined step classes to allow for creating the same kind of unit tests, but with less steps.
 
 - `GivenWhenThen`
   - For when you can’t be bothered to create and use the separate step functionality regarding the ‘Given’, ‘When’ and ‘Then’ steps. This allows you to write the entire test in one step.
@@ -232,107 +293,76 @@ While this may perfectly fit our testing needs there are a couple functionalitie
 - `Should`
   - For when you feel like using steps is not your style. This step defines the entire test in one ‘Should’ sentence.
 
-### 📦 UnitBox
+# ⚡️ Almost there!
+
+While this may perfectly fit our testing needs there are a couple functionalities at our disposal that give our tests extra power.
+
+### 🏗 setUpOnce, setUpEach, tearDownOnce, tearDownEach
 
 ---
 
-The `UnitBox` comes as the third argument (`box`) in the `UnitStepCallback`. This box is basically a map that may be used to write and read values that need to persist throughout a series of steps inside a `UnitScenario`. Any value that you `box.write(key, value)` will be retrievable in all `UnitStep`'s after that or until removed or until all steps have been executed. Reading a value with box.`read(key)` will automatically cast it to the `Type` that you specify. So reading an `int` like this → `final int value = box.read(myIntValue)` would automatically cast it to an `int` (🆒).
+Each class has access to these methods and will run them in sort of the same way:
 
-Using the box may look like this:
+- `setUpEach` - will run at the START of EACH `UnitScenario` under the chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
+- `tearDownEach` - will run at the END of EACH `UnitScenario` under the chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
+- `setUpOnce` - will run ONCE at the START of chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
+- `tearDownOnce` - will run ONCE at the END of chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
 
-```dart
-[
-  Given(
-    'This is an example for the UnitBox',
-    (systemUnderTest, log, box, [example]) {
-      box.write('isExample', true);
-    },
-  ),
-  When(
-    'we write some values',
-    (systemUnderTest, log, box, [example]) {
-      box.write('exampleValue', 1);
-      box.write('mood', 'happy');
-    },
-  ),
-  Then(
-    'all the values should be accessible up until the last step.',
-    (systemUnderTest, log, box, [example]) {
-      final bool isExample = box.read('isExample');
-      final int exampleValue = box.read('exampleValue');
-      final bool mood = box.read('mood');
-      expect(isExample, true);
-      expect(exampleValue, 1);
-      expect('mood', 'happy');
-    },
-  ),
-]
-```
+<aside>
+💡 So a good way to remember which method does what is that all the `each` methods will run per `UnitScenario` / `UnitExample` (**this** is important to realise!) **under the defining class that holds the method** and all the `once` methods will run **once in the defining class that holds the method**.
 
-### 🧪 Examples
+</aside>
 
----
-
-Let’s continue with our test demonstrated above. For the succeeding scenario of ‘saving a good dummy should succeed’ we’re going to add some `examples`. Each example will get run through the specified `steps` in your scenario and each example will be accessible through the `example` parameter. Let’s start with adding an `example` where we specify the platform and the current connection status.
+Using the methods may look a bit like this:
 
 ```dart
-@GenerateMocks([])
 class DummyUnitTest extends UnitTest {
   DummyUnitTest()
       : super(
           description: 'All unit tests regarding dummies',
+          setUpOnce: (mocks, systemUnderTest) async {
+            await AppSetup.initialise(); // Runs once at the start of this test.
+          },
+          setUpEach: (mocks, systemUnderTest) async {
+            systemUnderTest.reset();
+          },
+          tearDownOnce: (mocks, systemUnderTest) async {
+            await AppSetup.dispose(); // Runs once at the end of this test.
+          },
           features: [
-            UnitFeature(
+            UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              setUpEach: (mocks, systemUnderTest) {
+                // TODO(you): Do something
+              },
+              systemUnderTest: (mocks) {
+                final dummyMock = DummyMock();
+                mocks.write(dummyMock);
+                return DummyService(dummyDependency: dummyMock);
+              },
               scenarios: [
                 UnitScenario(
                   description: 'Saving a good dummy should succeed',
-                  systemUnderTest: DummyService(),
+                  tearDownEach: (mocks, systemUnderTest) {
+                    // TODO(you): Do something
+                  },
                   examples: [
-                    UnitExample(
-                      description: 'Platform is iOS, Connection status is online',
-                      values: [Platform.iOS, Connection.online],
-                    ),
-                    UnitExample(
-                      description: 'Platform is Android, Connection status is online',
-                      values: [Platform.android, Connection.online],
-                    ),
-                    UnitExample(
-                      description: 'Platform is iOS, Connection status is offline',
-                      values: [Platform.iOS, Connection.offline],
-                    ),
-                    UnitExample(
-                      description: 'Platform is Android, Connection status is offline',
-                      values: [Platform.android, Connection.offline],
-                    ),
+                    const UnitExample(values: [1]),
+                    const UnitExample(values: [5]),
+                    const UnitExample(values: [10]),
                   ],
                   steps: [
                     Given(
-                      'The dummy service is initialised',
-                      (systemUnderTest, log, box, [_]) {
-                        // TODO(you): Initialise service
+                      'I access the example value',
+                      (systemUnderTest, log, box, mocks, [example]) {
+                        final int exampleValue = example!.firstValue();
                       },
-                    ),
-                    When(
-                      'We call the dummy service with dummy info',
-                      (systemUnderTest, log, box, [example]) {
-                        // TODO(you): Call dummy service with dummy info
-                      },
-                    ),
-                    Then(
-                      'It should succeed',
-                      (systemUnderTest, log, box, [example]) {
-                        // TODO(you): Verify success
-                      },
-                    ),
+                    )
                   ],
                 ),
                 UnitScenario(
                   description: 'Saving a bad dummy should fail',
-                  systemUnderTest: DummyService(),
-                  steps: [
-                    // TODO(you): Implement fail steps
-                  ],
+                  steps: [],
                 ),
               ],
             ),
@@ -341,100 +371,9 @@ class DummyUnitTest extends UnitTest {
 }
 ```
 
-So for each example:
+# ✅ Success!
 
-- 'Platform is iOS, Connection status is online'
-- 'Platform is Android, Connection status is online'
-- 'Platform is iOS, Connection status is offline'
-- 'Platform is Android, Connection status is offline'
-
-It will now run each step (`Given`, `When`, `Then`) inside the 'Saving a good dummy should succeed' scenario. You may now access the example values in the following way:
-
-```dart
-Given(
-  'The dummy service is initialised',
-  (systemUnderTest, log, [example, _]) {
-    final Platform platform = example.firstValue();
-    final Connection connection = example.secondValue();
-  },
-),
-```
-
-<aside>
-💡 *Be sure to make your declaration type safe, because the `firstValue()` helper method will `cast` the value to whatever type your specify, use with caution!*
-
-</aside>
-
-### 🧸 Custom Examples
-
----
-
-It’s also possible to create your own `UnitExample` like this:
-
-```dart
-class CustomExample extends UnitExample {
-  CustomExample({
-    required this.platform,
-    required this.connection,
-  });
-
-  final Platform platform;
-  final Connection connection;
-}
-```
-
-Your `UnitStep` will automatically recognise the type of your example if you specify it as a generic argument for your `UnitScenario` like this:
-
-```dart
-class ExampleScenario extends UnitScenario<CustomExample> {}
-```
-
-### 🏗 setUpOnce, setUpEach, tearDownOnce, tearDownEach
-
----
-
-Another handy way to empower your tests is by using one of several `setUp` and `tearDown` methods. Each class has access to these methods and will run them in sort of the same way:
-
-- `setUpEach` - will run at the START of EACH `UnitScenario` under the chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
-- `tearDownEach` - will run at the END of EACH `UnitScenario` under the chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
-- `setUpOnce` - will run ONCE at the START of chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
-- `tearDownOnce` - will run ONCE at the END of chosen class (may be specified in `UnitTest`, `UnitFeature` or `UnitScenario` itself).
-
-<aside>
-💡 *So a good way to remember which method does what is that all the `each` methods will run per `UnitScenario` / `UnitExample` **under the defining class that holds the method** and all the `once` methods will run **once in the defining class that holds the method**.*
-
-</aside>
-
-Using the methods may look a bit like this:
-
-```dart
-@GenerateMocks([])
-class DummyUnitTest extends UnitTest {
-  DummyUnitTest()
-      : super(
-          description: 'All unit tests regarding dummies',
-          setUpOnce: () async {
-            await AppSetup.initialise(); // Runs once at the start of this test.
-          },
-          tearDownOnce: () async {
-            await AppSetup.dispose(); // Runs once at the end of this test.
-          },
-          features: [
-            UnitFeature(
-              description: 'Saving of dummies',
-              tearDownEach: () {
-                // TODO(you): Reset to dummy screen at the end of each scenario or example in this feature.
-              },
-              scenarios: [
-                UnitScenario(
-                  description: 'Saving a good dummy should succeed',
-                  setUpEach: () {
-                    // TODO(you): Reset dummy status at the start of this scenario or each example in this scenario.
-                  },
-                  examples: // etc, rest of code
-```
-
-Now to run these tests all you have to do is add the `DummyUnitTests` to your main test function and hit run.
+Now to run these tests all you have to do is add the `DummyUnitTests` to your main test function, hit run and pray for success.
 
 ```dart
 void main() {
