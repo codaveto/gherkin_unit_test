@@ -2,6 +2,10 @@
 
 * Update readme.
 
+## 0.0.4+2
+
+* Update readme.
+
 ## 0.0.4+1
 
 * Updated the `UnitScenario`'s `TestGroupFunction`'s with the proper `SUT` generic.
