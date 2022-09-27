@@ -9,7 +9,7 @@
 
 This package is based on the `Behaviour Driven Development` (BDD) language called `Gherkin`. This language enables us as developers to design and execute tests in an intuitive and readable way. For people who have a little less experience with development, these tests are also easy to understand because the syntax is very similar to English.
 
-![gherkin.jpg](gherkin.jpg)
+![gherkin.jpg](https://codaveto.com/_next/image?url=https%3A%2F%2Fsuper-static-assets.s3.amazonaws.com%2F653aa7f7-32fd-4a5c-b3cf-2044da52b531%2Fimages%2Fac3365f7-0e25-4500-9340-34f54c2eebda.jpg&w=640&q=80)
 
 Most tests look something like this:
 
@@ -35,7 +35,7 @@ In this same way we have built our framework, we have the following classes at o
   - `And`
   - `But`
 
-From top to bottom, each class may contain a number of the class below it (one to many). A `UnitTest` may contain multiple `UnitFeature` which in turn may contain multiple `UnitScenario` which in turn may contain multiple `UnitStep`.
+From top to bottom, each class may contain a number of the class below it (one to many). A `UnitTest` may contain multiple `UnitFeature` which in turn may contain multiple `UnitScenario` which in turn may contain multiple `UnitExample` and `UnitStep`.
 
 ## 🛠 Implementation
 
@@ -374,9 +374,3 @@ class DummyUnitTest extends UnitTest {
 # ✅ Success!
 
 Now to run these tests all you have to do is add the `DummyUnitTests` to your main test function, hit run and pray for success.
-
-```dart
-void main() {
-  DummyUnitTests().test();
-}
-```
