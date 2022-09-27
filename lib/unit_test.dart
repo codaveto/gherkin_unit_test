@@ -78,8 +78,8 @@ class UnitTest<SUT> {
 
   /// Runs any provided [_setUpEach], [_setUpOnce], [_tearDownEach] and [_tearDownOnce] methods.
   void _setUpAndTeardown({
-    required SUT? systemUnderTest,
     required UnitMocks mocks,
+    SUT? systemUnderTest,
   }) {
     if (_setUpOnce != null) {
       flutter_test.setUpAll(() => _setUpOnce!(mocks, systemUnderTest));
