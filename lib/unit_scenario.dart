@@ -7,10 +7,10 @@ class UnitScenario<SUT, Example extends UnitExample?> {
     required List<UnitStep<SUT, Example>> steps,
     SUT Function(UnitMocks mocks)? systemUnderTest,
     List<Example> examples = const [],
-    TestGroupFunction? setUpEach,
-    TestGroupFunction? tearDownEach,
-    TestGroupFunction? setUpOnce,
-    TestGroupFunction? tearDownOnce,
+    TestGroupFunction<SUT>? setUpEach,
+    TestGroupFunction<SUT>? tearDownEach,
+    TestGroupFunction<SUT>? setUpOnce,
+    TestGroupFunction<SUT>? tearDownOnce,
   })  : _description = description,
         _systemUnderTestCallback = systemUnderTest,
         _steps = steps,
@@ -40,19 +40,19 @@ class UnitScenario<SUT, Example extends UnitExample?> {
 
   /// Code that will run at the START of this [UnitScenario]
   /// or at the START of EACH [UnitScenario._examples].
-  final TestGroupFunction? _setUpEach;
+  final TestGroupFunction<SUT>? _setUpEach;
 
   /// Code that will run ONCE at the END of this [UnitScenario]
   /// or ONCE at the END of EACH [UnitScenario._examples].
-  final TestGroupFunction? _tearDownEach;
+  final TestGroupFunction<SUT>? _tearDownEach;
 
   /// Code that will run at the START of this [UnitScenario]
   /// regardless of how many [UnitScenario._examples] you have specified.
-  final TestGroupFunction? _setUpOnce;
+  final TestGroupFunction<SUT>? _setUpOnce;
 
   /// Code that will run ONCE at the END of this [UnitScenario]
   /// regardless of how many [UnitScenario._examples] you have specified.
-  final TestGroupFunction? _tearDownOnce;
+  final TestGroupFunction<SUT>? _tearDownOnce;
 
   /// Runs all tests defined in this [UnitScenario]s [_steps].
   ///

@@ -1,3 +1,7 @@
+## 0.0.4+1
+
+* Updated the `UnitScenario`'s `TestGroupFunction`'s with the proper `SUT` generic.
+
 ## 0.0.4
 
 * **✨ New:** Added the option to add a `systemUnderTest` from higher up the tree (e.g. `UnitFeature` and `UnitTest`).
