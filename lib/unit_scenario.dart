@@ -73,8 +73,8 @@ class UnitScenario<SUT, Example extends UnitExample?> {
       _description,
       () {
         final _mocks = mocks ?? UnitMocks();
-        SUT? _systemUnderTest =
-            _systemUnderTestCallback?.call(_mocks) ?? systemUnderTest;
+        final SUT _systemUnderTest =
+            _systemUnderTestCallback?.call(_mocks) ?? systemUnderTest!;
         _setUpAndTeardown(mocks: _mocks, systemUnderTest: _systemUnderTest);
         for (int index = 0; index < math.max(1, _examples.length); index++) {
           flutter_test.test(
@@ -133,7 +133,7 @@ class UnitScenario<SUT, Example extends UnitExample?> {
   /// Runs any provided [_setUpEach], [_setUpOnce], [_tearDownEach] and [_tearDownOnce] methods.
   void _setUpAndTeardown({
     required UnitMocks mocks,
-    SUT? systemUnderTest,
+    required SUT systemUnderTest,
   }) {
     if (_setUpOnce != null) {
       flutter_test.setUpAll(() => _setUpOnce!(mocks, systemUnderTest));

@@ -6,10 +6,10 @@ class UnitFeature<SUT> {
     required String description,
     required List<UnitScenario<SUT, UnitExample>> scenarios,
     SUT Function(UnitMocks mocks)? systemUnderTest,
-    TestGroupFunction<SUT>? setUpEach,
-    TestGroupFunction<SUT>? tearDownEach,
-    TestGroupFunction<SUT>? setUpOnce,
-    TestGroupFunction<SUT>? tearDownOnce,
+    TestGroupFunctionNullable<SUT>? setUpEach,
+    TestGroupFunctionNullable<SUT>? tearDownEach,
+    TestGroupFunctionNullable<SUT>? setUpOnce,
+    TestGroupFunctionNullable<SUT>? tearDownOnce,
   })  : _description = description,
         _systemUnderTestCallback = systemUnderTest,
         _scenarios = scenarios,
@@ -29,17 +29,17 @@ class UnitFeature<SUT> {
 
   /// Code that will run at the START of each [UnitScenario] under this [UnitFeature]
   /// or at the START of EACH [UnitScenario._examples] under this [UnitFeature].
-  final TestGroupFunction<SUT>? _setUpEach;
+  final TestGroupFunctionNullable<SUT>? _setUpEach;
 
   /// Code that will run ONCE at the END of this [UnitScenario] under this [UnitFeature]
   /// or ONCE at the END of EACH [UnitScenario._examples] under this [UnitFeature].
-  final TestGroupFunction<SUT>? _tearDownEach;
+  final TestGroupFunctionNullable<SUT>? _tearDownEach;
 
   /// Code that will be run ONCE at the START of this [UnitFeature].
-  final TestGroupFunction<SUT>? _setUpOnce;
+  final TestGroupFunctionNullable<SUT>? _setUpOnce;
 
   /// Code that will be run ONCE at the END of this [UnitFeature].
-  final TestGroupFunction<SUT>? _tearDownOnce;
+  final TestGroupFunctionNullable<SUT>? _tearDownOnce;
 
   /// Runs this [UnitFeature]'s [UnitScenario.test] methods.
   void test({

@@ -1,4 +1,8 @@
-## 0.0.4+2
+## 0.0.4+4
+
+* Removed nullability from the `systemUnderTest` inside a `UnitScenario`.
+
+## 0.0.4+3
 
 * Update readme.
 
