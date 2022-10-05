@@ -1,3 +1,7 @@
+## 0.0.4+5
+
+* Removed unused UnitExample.isLastExample 
+
 ## 0.0.4+4
 
 * Removed nullability from the `systemUnderTest` inside a `UnitScenario`.
