@@ -15,8 +15,9 @@ class UnitExample {
   final String? _description;
 
   @override
-  String toString() =>
-      _description != null ? '$_description: $_values' : 'UnitExample{values: $_values}';
+  String toString() => _description != null
+      ? '$_description: $_values'
+      : 'UnitExample{values: $_values}';
 }
 
 extension UnitExampleExtension on UnitExample? {
