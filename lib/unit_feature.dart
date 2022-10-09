@@ -5,12 +5,14 @@ class UnitFeature<SUT> {
   const UnitFeature({
     required String description,
     required List<UnitScenario<SUT, UnitExample>> scenarios,
+    void Function(UnitMocks mocks)? setUpMocks,
     SUT Function(UnitMocks mocks)? systemUnderTest,
     TestGroupFunctionNullable<SUT>? setUpEach,
     TestGroupFunctionNullable<SUT>? tearDownEach,
     TestGroupFunctionNullable<SUT>? setUpOnce,
     TestGroupFunctionNullable<SUT>? tearDownOnce,
   })  : _description = description,
+        _setUpMocks = setUpMocks,
         _systemUnderTestCallback = systemUnderTest,
         _scenarios = scenarios,
         _setUpEach = setUpEach,
@@ -20,6 +22,9 @@ class UnitFeature<SUT> {
 
   /// High-level description of the [UnitFeature] and related [UnitScenario]s.
   final String _description;
+
+  /// Callback to set up mocks before any other logic is run.
+  final void Function(UnitMocks mocks)? _setUpMocks;
 
   /// The callback to retrieve the system/unit that you are testing.
   final SUT Function(UnitMocks mocks)? _systemUnderTestCallback;
@@ -52,7 +57,9 @@ class UnitFeature<SUT> {
       _description,
       () {
         final _mocks = mocks ?? UnitMocks();
-        final _systemUnderTest = _systemUnderTestCallback?.call(_mocks);
+        _setUpMocks?.call(_mocks);
+        final _systemUnderTest =
+            _systemUnderTestCallback?.call(_mocks) ?? systemUnderTest;
         _setUpAndTeardown(mocks: _mocks, systemUnderTest: _systemUnderTest);
         for (int nrScenario = 0; nrScenario < _scenarios.length; nrScenario++) {
           _scenarios[nrScenario].test(
@@ -61,7 +68,7 @@ class UnitFeature<SUT> {
             nrScenario: nrScenario,
             nrFeature: nrFeature,
             mocks: _mocks,
-            systemUnderTest: _systemUnderTest ?? systemUnderTest,
+            systemUnderTest: _systemUnderTest,
           );
         }
       },

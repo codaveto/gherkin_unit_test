@@ -6,12 +6,14 @@ class UnitScenario<SUT, Example extends UnitExample?> {
     required String description,
     required List<UnitStep<SUT, Example>> steps,
     SUT Function(UnitMocks mocks)? systemUnderTest,
+    void Function(UnitMocks mocks)? setUpMocks,
     List<Example> examples = const [],
     TestGroupFunction<SUT>? setUpEach,
     TestGroupFunction<SUT>? tearDownEach,
     TestGroupFunction<SUT>? setUpOnce,
     TestGroupFunction<SUT>? tearDownOnce,
   })  : _description = description,
+        _setUpMocks = setUpMocks,
         _systemUnderTestCallback = systemUnderTest,
         _steps = steps,
         _examples = examples,
@@ -25,6 +27,9 @@ class UnitScenario<SUT, Example extends UnitExample?> {
 
   /// High-level description of the [UnitScenario].
   final String _description;
+
+  /// Callback to set up mocks before any other logic is run.
+  final void Function(UnitMocks mocks)? _setUpMocks;
 
   /// The callback to retrieve the system/unit that you are testing.
   final SUT Function(UnitMocks mocks)? _systemUnderTestCallback;
@@ -73,6 +78,7 @@ class UnitScenario<SUT, Example extends UnitExample?> {
       _description,
       () {
         final _mocks = mocks ?? UnitMocks();
+        _setUpMocks?.call(_mocks);
         final SUT _systemUnderTest =
             _systemUnderTestCallback?.call(_mocks) ?? systemUnderTest!;
         _setUpAndTeardown(mocks: _mocks, systemUnderTest: _systemUnderTest);

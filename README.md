@@ -1,15 +1,11 @@
 # 🧪 Gherkin Unit Test
 
----
-
 <aside>
 ❗ The example project has a test folder where the example project is being fully tested with this framework.
 
 </aside>
 
 This package is based on the `Behaviour Driven Development` (BDD) language called `Gherkin`. This language enables us as developers to design and execute tests in an intuitive and readable way. For people who have a little less experience with development, these tests are also easy to understand because the syntax is very similar to English.
-
-![gherkin.jpg](https://codaveto.com/_next/image?url=https%3A%2F%2Fsuper-static-assets.s3.amazonaws.com%2F653aa7f7-32fd-4a5c-b3cf-2044da52b531%2Fimages%2Fac3365f7-0e25-4500-9340-34f54c2eebda.jpg&w=640&q=80)
 
 Most tests look something like this:
 
@@ -69,7 +65,7 @@ The `UnitFeature` is also the place where we (for this example) define the `syst
 This paramater takes a callback where you may perform any logic to initialise the `systemUnderTest`. This callback is carried out after before any `setUp` methods you specify in that class.
 
 <aside>
-💡 The `systemUnderTest` callback also gives you access to a `UnitMock` object. You may optionally use this object to store mocks for your `systemUnderTest` so you may later retrieve them to reset or stub methods to your liking.
+💡 The `systemUnderTest` callback also gives you access to a `UnitMock` object. You may optionally use this object to store and retrieve mocks for your `systemUnderTest`. Feel free to set up mocks anywhere you like, however it is recommended to use the `setUpMocks` method to keep a good overview. The `setUpMocks` method is always called first before any other method inside a `UnitTest`, `UnitFeature` or `UnitScenario`.
 
 </aside>
 
@@ -83,10 +79,11 @@ class DummyUnitTest extends UnitTest {
           features: [
             UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              setUpMocks: (mocks) {
+                mocks.write(DummyMock());
+              },
               systemUnderTest: (mocks) {
-                final dummyMock = DummyMock();
-                mocks.write(dummyMock);
-                return DummyService(dummyDependency: dummyMock);
+                return DummyService(dummyDependency: mocks.read(DummyMock));
               },
               scenarios: [],
             ),
@@ -116,10 +113,11 @@ class DummyUnitTest extends UnitTest {
           features: [
             UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              setUpMocks: (mocks) {
+                mocks.write(DummyMock());
+              },
               systemUnderTest: (mocks) {
-                final dummyMock = DummyMock();
-                mocks.write(dummyMock);
-                return DummyService(dummyDependency: dummyMock);
+                return DummyService(dummyDependency: mocks.read(DummyMock));
               },
               scenarios: [
                 UnitScenario(
@@ -195,11 +193,11 @@ typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void> Fun
       ```
 
 - `UnitMocks mocks`
-  - Alos a box that exists and persists throughout your entire `UnitTest`, `UnitFeature` and/or `UnitScenario`. You may have optionally used this box to store mocks that your `systemUnderTest` needs so you may later retrieve them to stub methods to your liking.
+  - A box that exists and persists throughout your entire `UnitTest`, `UnitFeature` and/or `UnitScenario`. You may have optionally use this box to store mocks that you need so you may later retrieve them to stub methods to your liking.
 - `UnitExample? example`
   - Optional ‘Scenario Outline’ examples that may have been specified inside a `UnitScenario` like this:
 
-      ```
+      ```dart
       UnitScenario(
         description: 'Saving a good dummy should succeed',
         examples: [
@@ -222,7 +220,7 @@ typedef UnitStepCallback<SUT, Example extends UnitExample?> = FutureOr<void> Fun
       ```
 
       <aside>
-      💡 *Be sure to make your declaration type safe so the `firstValue()` helper method can `cast` the value to whatever type your specify, use with caution!*
+      💡 Be sure to make your declaration type safe so the `firstValue()` helper method can `cast` the value to whatever type your specify, use with caution!
 
       </aside>
 
@@ -239,10 +237,11 @@ class DummyUnitTest extends UnitTest {
           features: [
             UnitFeature<DummyService>(
               description: 'Saving of dummies',
+              setUpMocks: (mocks) {
+                mocks.write(DummyMock());
+              },
               systemUnderTest: (mocks) {
-                final dummyMock = DummyMock();
-                mocks.write(dummyMock);
-                return DummyService(dummyDependency: dummyMock);
+                return DummyService(dummyDependency: mocks.read(DummyMock));
               },
               scenarios: [
                 UnitScenario(
@@ -287,11 +286,11 @@ class DummyUnitTest extends UnitTest {
 Because not everybody wants to write tests the same way we also created these combined step classes to allow for creating the same kind of unit tests, but with less steps.
 
 - `GivenWhenThen`
-  - For when you can’t be bothered to create and use the separate step functionality regarding the ‘Given’, ‘When’ and ‘Then’ steps. This allows you to write the entire test in one step.
+  - For when you can’t be bothered to create and use the separate step functionality regarding the ‘`Given`’, ‘`When`’ and ‘`Then`’ steps. This allows you to write the entire test in one step.
 - `WhenThen`
-  - For when you can’t be bothered to create and use the separate step functionality regarding the ‘When’ and ‘Then’ steps. This allows you to combine both steps into one.
+  - For when you can’t be bothered to create and use the separate step functionality regarding the ‘`When`’ and ‘`Then`’ steps. This allows you to combine both steps into one.
 - `Should`
-  - For when you feel like using steps is not your style. This step defines the entire test in one ‘Should’ sentence.
+  - For when you feel like using steps is not your style. This step defines the entire test in one ‘`Should`’ sentence.
 
 # ⚡️ Almost there!
 
@@ -335,10 +334,11 @@ class DummyUnitTest extends UnitTest {
               setUpEach: (mocks, systemUnderTest) {
                 // TODO(you): Do something
               },
+              setUpMocks: (mocks) {
+                mocks.write(DummyMock());
+              },
               systemUnderTest: (mocks) {
-                final dummyMock = DummyMock();
-                mocks.write(dummyMock);
-                return DummyService(dummyDependency: dummyMock);
+                return DummyService(dummyDependency: mocks.read(DummyMock));
               },
               scenarios: [
                 UnitScenario(
@@ -374,3 +374,9 @@ class DummyUnitTest extends UnitTest {
 # ✅ Success!
 
 Now to run these tests all you have to do is add the `DummyUnitTests` to your main test function, hit run and pray for success.
+
+```dart
+void main() {
+  DummyUnitTests().test();
+}
+```

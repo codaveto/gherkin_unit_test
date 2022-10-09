@@ -1,3 +1,8 @@
+## 0.0.5
+
+* **✨ New:** Added new `setUpMocks` methods to `UnitTest`, `UnitFeature`, `UnitScenario`.
+* **⚠️ Breaking:** Removed the optional `mocks` parameter from the `UnitTest.test` method, because redundant.
+
 ## 0.0.4+8
 
 * Update example project

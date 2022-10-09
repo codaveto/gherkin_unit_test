@@ -20,12 +20,14 @@ class UnitTest<SUT> {
   UnitTest({
     required String description,
     required List<UnitFeature> features,
+    void Function(UnitMocks mocks)? setUpMocks,
     SUT Function(UnitMocks mocks)? systemUnderTest,
     TestGroupFunctionNullable<SUT>? setUpEach,
     TestGroupFunctionNullable<SUT>? tearDownEach,
     TestGroupFunctionNullable<SUT>? setUpOnce,
     TestGroupFunctionNullable<SUT>? tearDownOnce,
   })  : _description = description,
+        _setUpMocks = setUpMocks,
         _systemUnderTestCallback = systemUnderTest,
         _features = features,
         _setUpEach = setUpEach,
@@ -35,6 +37,9 @@ class UnitTest<SUT> {
 
   /// High-level description of the [UnitTest] and related [UnitFeature]s.
   final String _description;
+
+  /// Callback to set up mocks before any other logic is run.
+  final void Function(UnitMocks mocks)? _setUpMocks;
 
   /// The callback to retrieve the system/unit that you are testing.
   final SUT Function(UnitMocks mocks)? _systemUnderTestCallback;
@@ -57,19 +62,20 @@ class UnitTest<SUT> {
   final TestGroupFunctionNullable<SUT>? _tearDownOnce;
 
   /// Runs all [UnitTest._features] test methods.
-  void test({UnitMocks? mocks}) {
+  void test() {
     flutter_test.group(
       _description,
       () {
-        final _mocks = mocks ?? UnitMocks();
-        final _systemUnderTest = _systemUnderTestCallback?.call(_mocks);
-        _setUpAndTeardown(mocks: _mocks, systemUnderTest: _systemUnderTest);
+        final mocks = UnitMocks();
+        _setUpMocks?.call(mocks);
+        final systemUnderTest = _systemUnderTestCallback?.call(mocks);
+        _setUpAndTeardown(mocks: mocks, systemUnderTest: systemUnderTest);
         for (int nrFeature = 0; nrFeature < _features.length; nrFeature++) {
           _features[nrFeature].test(
             testDescription: _description,
             nrFeature: nrFeature,
             mocks: mocks,
-            systemUnderTest: _systemUnderTest,
+            systemUnderTest: systemUnderTest,
           );
         }
       },
